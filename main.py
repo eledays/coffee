@@ -1,4 +1,5 @@
 import sqlite3
+from prettytable import PrettyTable
 
 
 def create_db():
@@ -41,8 +42,18 @@ def create_db():
 
 
 def main():
-    ...
+    conn = sqlite3.connect('coffee.sqlite')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM coffee')
+    coffees = cursor.fetchall()
+
+    table = PrettyTable(['ID', 'название сорта', 'степень обжарки', 'молотый/в зернах', 'описание вкуса', 'цена', 'объем упаковки'])
+    for coffee in coffees:
+        table.add_row(coffee)
+
+    print(table)
 
 
 if __name__ == '__main__':
-    create_db()
+    main()
