@@ -1,5 +1,41 @@
 import sqlite3
-from prettytable import PrettyTable
+import sys
+
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem
+from PyQt6 import uic
+
+
+class MyWidget(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+        
+        uic.loadUi('main.ui', self)
+        self.refreshBtn.clicked.connect(self.refresh)
+
+        self.table.setRowCount(1)
+        self.table.setColumnCount(7)
+
+        self.conn = sqlite3.connect('coffee.sqlite')
+        self.cursor = self.conn.cursor()
+
+        self.refresh()
+
+    def refresh(self):
+        self.cursor.execute('SELECT * FROM coffee')
+        coffees = self.cursor.fetchall()
+        self.table.setRowCount(len(coffees))
+
+        for coffee in coffees:
+            self.table.setItem(coffees.index(coffee), 0, QTableWidgetItem(str(coffee[0])))
+            self.table.setItem(coffees.index(coffee), 1, QTableWidgetItem(coffee[1]))
+            self.table.setItem(coffees.index(coffee), 2, QTableWidgetItem(coffee[2]))
+            self.table.setItem(coffees.index(coffee), 3, QTableWidgetItem(coffee[3]))
+            self.table.setItem(coffees.index(coffee), 4, QTableWidgetItem(str(coffee[4])))
+            self.table.setItem(coffees.index(coffee), 5, QTableWidgetItem(str(coffee[5])))
+            self.table.setItem(coffees.index(coffee), 6, QTableWidgetItem(str(coffee[6])))
+        
 
 
 def create_db():
@@ -41,19 +77,8 @@ def create_db():
     conn.close()
 
 
-def main():
-    conn = sqlite3.connect('coffee.sqlite')
-    cursor = conn.cursor()
-
-    cursor.execute('SELECT * FROM coffee')
-    coffees = cursor.fetchall()
-
-    table = PrettyTable(['ID', 'название сорта', 'степень обжарки', 'молотый/в зернах', 'описание вкуса', 'цена', 'объем упаковки'])
-    for coffee in coffees:
-        table.add_row(coffee)
-
-    print(table)
-
-
 if __name__ == '__main__':
-    main()
+    app = QApplication(sys.argv)
+    ex = MyWidget()
+    ex.show()
+    sys.exit(app.exec())
