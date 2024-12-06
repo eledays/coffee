@@ -5,11 +5,13 @@ from PyQt6.QtWidgets import QApplication
 from PyQt6.QtWidgets import QMainWindow, QTableWidgetItem
 from PyQt6 import uic
 
+from UI import main, addEditCoffeeForm
+
 
 class Databaser:
 
     def __init__(self):
-        self.conn = sqlite3.connect('coffee.sqlite')
+        self.conn = sqlite3.connect('data/coffee.sqlite')
         self.cursor = self.conn.cursor()
 
     def create_table(self):
@@ -80,14 +82,14 @@ class Databaser:
         self.conn.close()
 
 
-class MyWidget(QMainWindow):
+class MyWidget(QMainWindow, main.Ui_MainWindow):
 
     def __init__(self, db):
         super().__init__()
 
         self.db = db
         
-        uic.loadUi('main.ui', self)
+        self.setupUi(self)
         self.refreshBtn.clicked.connect(self.refresh)
         self.editBtn.clicked.connect(self.edit)
 
@@ -114,11 +116,11 @@ class MyWidget(QMainWindow):
         self.second_window.show()
 
 
-class SecondWidget(QMainWindow):
+class SecondWidget(QMainWindow, addEditCoffeeForm.Ui_MainWindow):
 
     def __init__(self, db):
         super().__init__()
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
 
         self.db = db
         
